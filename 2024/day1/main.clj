@@ -21,7 +21,7 @@
        (map #(str/split % #"   "))
        (map #(map parse-int %))))
 
-;; METHOD: sort each column and then substract, and add the absolute differences.
+;; METHOD: split columns(lists), sort each column and then substract, and add the absolute differences.
 
 (def first-col-sorted
   (sort (map #(first %) input-data)))
@@ -34,8 +34,25 @@
          (map Math/abs
               (map - first-col-sorted second-col-sorted))))
 
+;; Calculate everything at once. sort once instead of twice
+(def total-difference-2
+  (let [[first-col second-col]
+        ;transpose data into two vectors, one containing all first-col elements
+        ; and one containing second-col elements
+        (apply map vector input-data)
+        ;sort
+        first-col-sorted (sort first-col)
+        second-col-sorted (sort second-col)]
+    ;add all differences together
+    (apply +
+           ;take the absolute value of each substraction, because we are looking
+           ; for the difference between two cols
+           (map Math/abs
+                ;substract cols
+                (map - first-col-sorted second-col-sorted)))))
+
 (defn -main
   []
-  (println total-difference))
+  (println total-difference-2))
 
 (-main)
