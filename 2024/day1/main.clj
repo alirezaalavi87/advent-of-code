@@ -21,6 +21,7 @@
        (map #(str/split % #"   "))
        (map #(map parse-int %))))
 
+;; Calculate difference between two lists
 ;; METHOD: split columns(lists), sort each column and then substract, and add the absolute differences.
 
 (def first-col-sorted
@@ -34,7 +35,7 @@
          (map Math/abs
               (map - first-col-sorted second-col-sorted))))
 
-;; Calculate everything at once. sort each list once instead of twice
+; Calculate everything at once. sort each list once instead of twice
 (def total-difference-2
   (let [[first-col second-col]
         ;transpose data into two vectors, one containing all first-col elements
@@ -51,8 +52,33 @@
                 ;substract cols
                 (map - first-col-sorted second-col-sorted)))))
 
+;; Calculate similarity score between two lists
+;; HOW: multiply each number in left list by the times that it appeared in the right list.
+;;then add them all up.
+;; METHOD1: for x in sorted list1, iterate all items y in sorted list2 until y>x
+;;and count how many times x=y  [O(n+m)]
+;; METHOD2: create hash map that stores the frequency of each number in list2,
+;;for each number, if number exists as key in the hash map, increment it's value,
+;;if not, add it with count 1.
+;;Iterate through list1, and check if number exists in frequency hash map, and add the value the
+;;total similarity score. (no need for sorting) [O(n+m)]
+
+; Count how many times value occurs on coll(ection)
+(defn count-occurrences [value coll]
+  (count (filter #(= % value) coll)))
+
+(defn calculate-similarity-score [left-list right-list]
+  (reduce
+   (fn [score left-val]
+     (let [count (count-occurrences left-val right-list)]
+       ; Calculate score and add to score
+       (+ score (* left-val count))))
+   0 ;initial score
+   left-list))
+
 (defn -main
   []
-  (println total-difference-2))
+  (println total-difference)
+  (println (calculate-similarity-score first-col-sorted second-col-sorted)))
 
 (-main)
