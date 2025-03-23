@@ -34,7 +34,7 @@
          (map Math/abs
               (map - first-col-sorted second-col-sorted))))
 
-;; Calculate everything at once. sort once instead of twice
+;; Calculate everything at once. sort each list once instead of twice
 (def total-difference-2
   (let [[first-col second-col]
         ;transpose data into two vectors, one containing all first-col elements
