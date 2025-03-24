@@ -9,9 +9,6 @@
   (:require [clojure.string :as str])
   (:gen-class))
 
-(defn parse-int [s]
-  (Integer/parseInt s))
-
 ; prepare input:
 ; read data from file, split by lines, split each line into two strings separated by spaces,
 ; convert string to int
@@ -19,7 +16,7 @@
   (->> (slurp "./input.txt")
        (str/split-lines)
        (map #(str/split % #"   "))
-       (map #(map parse-int %))))
+       (map #(map parse-long %))))
 
 ;; Calculate difference between two lists
 ;; METHOD: split columns(lists), sort each column and then substract, and add the absolute differences.
@@ -48,7 +45,7 @@
     (apply +
            ;take the absolute value of each substraction, because we are looking
            ; for the difference between two cols
-           (map Math/abs
+           (map abs
                 ;substract cols
                 (map - first-col-sorted second-col-sorted)))))
 
@@ -63,22 +60,21 @@
 ;;Iterate through list1, and check if number exists in frequency hash map, and add the value the
 ;;total similarity score. (no need for sorting) [O(n+m)]
 
-; Count how many times value occurs on coll(ection)
-(defn count-occurrences [value coll]
-  (count (filter #(= % value) coll)))
-
 (defn calculate-similarity-score [left-list right-list]
-  (reduce
-   (fn [score left-val]
-     (let [count (count-occurrences left-val right-list)]
-       ; Calculate score and add to score
-       (+ score (* left-val count))))
-   0 ;initial score
-   left-list))
+  (let [right-freqs (frequencies right-list)]
+    ; Count how many times each item in left-list occured in right-list
+    ;and calculate the similarity score
+    (reduce
+     (fn [score left-val]
+       (let [count (get right-freqs left-val 0)]
+         (+ score (* left-val count))))
+
+     0
+     left-list)))
 
 (defn -main
   []
-  (println total-difference)
-  (println (calculate-similarity-score first-col-sorted second-col-sorted)))
+  (println "difference score:" total-difference)
+  (println "similarity score:" (calculate-similarity-score first-col-sorted second-col-sorted)))
 
 (-main)
