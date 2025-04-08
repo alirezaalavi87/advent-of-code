@@ -9,14 +9,16 @@
   (:require [clojure.string :as str])
   (:gen-class))
 
-; prepare input:
-; read data from file, split by lines, split each line into two strings separated by spaces,
-; convert string to int
+; prepare input
 (def input-data
-  (->> (slurp "./input.txt")
+  (->> (slurp "./input.txt");read data from file
+       ;split by lines
        (str/split-lines)
+       ;split each line into two strings separated by spaces
        (map #(str/split % #"   "))
-       (map #(map parse-long %))))
+       ;convert string to long int
+       (map #(map parse-long %))
+   ))
 
 ;; Calculate difference between two lists
 ;; METHOD: split columns(lists), sort each column and then substract, and add the absolute differences.
@@ -45,7 +47,7 @@
     (apply +
            ;take the absolute value of each substraction, because we are looking
            ; for the difference between two cols
-           (map abs
+           (map Math/abs
                 ;substract cols
                 (map - first-col-sorted second-col-sorted)))))
 
@@ -74,7 +76,7 @@
 
 (defn -main
   []
-  (println "difference score:" total-difference)
+  (println "difference score:" total-difference-2)
   (println "similarity score:" (calculate-similarity-score first-col-sorted second-col-sorted)))
 
 (-main)
