@@ -1,3 +1,8 @@
+/*****************************
+ *  Run file with `deno main.js`
+ *  or use the repl like `deno repl --eval-file=main.js`
+ * ***************************/
+
 const REPORTS_OK = [
     [1, 2, 4, 3, 5],
     [1, 3, 4, 7],
@@ -98,3 +103,6 @@ function getDiffs(value) {
 
     return diffs
 }
+
+console.info("safe reports:", countSafeReports());
+console.info("safe reports with removing one item:", countSafeReportsWithRemoval());
