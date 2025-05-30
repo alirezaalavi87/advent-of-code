@@ -37,8 +37,9 @@
     (and (monotonic-diffs? diffs) (diffs-within-bounds? diffs))))
 
 ;; count the safe reports
-(defn count-safe-reports [reports]
-  (count (filter safe-report? reports)))
+;; Accepts the function which safe reports are calculated with, and the list of reports
+(defn count-safe-reports [function reports]
+  (count (filter function reports)))
 
 ;;;;;;;;;;;;;;;;;
 ;     PART2     ;
@@ -49,6 +50,17 @@
 ;; Check if report is safe like PART1
 ;; If report is unsafe, start removing each element. if it becomes safe by removing an element,
 ;;The report is safe. if not, the report is not safe
-; (defn safe-report-with-removal? [report])
+(defn safe-report-with-removal? [report]
+  (if (safe-report? report)
+    ;if report is already safe
+    true
+    ; Remove elements one by one and see if report becomes safe
+    (some (fn [index]
+            ; create report-new without the element at index
+            (let [report-new (vec (concat (take index report) (drop (inc index) report)))]
+              (safe-report? report-new)))
+          ; create lazy seq from 0 to (count report) to use as index of predicate
+          (range (count report)))))
 
-(println (count-safe-reports input-reports))
+(println (count-safe-reports safe-report? input-reports))
+(println (count-safe-reports safe-report-with-removal? input-reports))
