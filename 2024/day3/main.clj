@@ -4,38 +4,46 @@
 ;; But since it is corrupted, there are other characters and invalid `mul` instructions.
 ;; Extract the correct `mul` instructions, from the text, do the multiplications, and add them all up.
 
+;;;; Utility
 (ns main
   (:require [clojure.string :as str])
   (:gen-class))
 
-(defn get-valid-instructions [s]
+(defn extract-mul-instructions [s]
   (re-seq #"mul\([0-9]*,[0-9]*\)" s))
 
 ;; Takes string in form of "mul(int,int)" and produces list of (long, long)
-(defn parse-numbers [s]
-  (if (not (string? s))
-    (throw (IllegalArgumentException. "input must be a string"))
+(defn parse-instruction-nums [s]
+  (when (string? s)
     (map #(Long/parseLong %) (re-seq #"\d+" s))))
 
 (defn remove-nils [l]
   (remove nil? l))
 
+(defn sum-results [results]
+  (apply + results))
+
+;;;;;;;;;;;;;;;;;
+;;  PART 1     ;;
+;;;;;;;;;;;;;;;;
+
 ;; Read content of file
 ; adds the implicit do() to the beginning, we'll see why in part2
 (def input (str "do()" (slurp "2024/day3/input.txt")))
 
-(def valid-instructions
-  (get-valid-instructions input))
+(def valid-muls
+  (extract-mul-instructions input))
 
-(def valid-instructions-parsed
-  (map parse-numbers valid-instructions))
+(def valid-muls-parsed
+  (map parse-instruction-nums valid-muls))
 
 ;; Multiply each pair
-(def valid-muls-results
-  (map #(apply * %) valid-instructions-parsed))
+(def mul-results
+  (map #(apply * %) valid-muls-parsed))
 
+;; Final result of part 1
 (def sum-of-muls
-  (apply + valid-muls-results))
+  (sum-results mul-results))
 
 ;;;;;;;;;;;;;;;
 ;; PART 2    ;;
@@ -55,20 +63,17 @@
 (defn split-dos [s]
   (str/split s #"do\(\)"))
 
-(defn parse-valid-from-dont-split [s]
-  ; Parse instructions into numbers
-  (map #(parse-numbers %)
-       (flatten
-        (remove-nils
-         ; Get the valid instructions from all the remaining splits
-         (map
-          #(get-valid-instructions %)
-          ; Remove the first part of the split: the dont() instructions
-          (rest
-           (split-dos s)))))))
+(defn parse-valid-instructions-from-dont-split [s]
+  "From a dont-split, meaning a split that ends in a don't() and before it there was a don't(),
+  find and parse the valid instructions that where after do() instructions."
+  (->> (split-dos s)
+       rest
+       (map extract-mul-instructions)
+       flatten
+       (map parse-instruction-nums)))
 
 (def valid-instructions-parsed2
-  (map parse-valid-from-dont-split (split-donts input)))
+  (map parse-valid-instructions-from-dont-split (split-donts input)))
 
 (def valid-muls-results2
   "Since valid-instructions-parsed2 is a nested list,
@@ -84,5 +89,6 @@
                        inner-list))
                 valid-instructions-parsed2)))
 
+;; Final result of part2
 (def sum-of-muls2
-  (apply + valid-muls-results2))
+  (sum-results valid-muls-results2))
