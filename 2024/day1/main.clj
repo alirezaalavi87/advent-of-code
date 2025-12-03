@@ -11,14 +11,13 @@
 
 ; prepare input
 (def input-data
-  (->> (slurp "./input.txt");read data from file
+  (->> (slurp "2024/day1/input.txt");read data from file
        ;split by lines
        (str/split-lines)
        ;split each line into two strings separated by spaces
        (map #(str/split % #"   "))
        ;convert string to long int
-       (map #(map parse-long %))
-   ))
+       (map #(map parse-long %))))
 
 ;; Calculate difference between two lists
 ;; METHOD: split columns(lists), sort each column and then substract, and add the absolute differences.

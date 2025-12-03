@@ -17,9 +17,6 @@
   (when (string? s)
     (map #(Long/parseLong %) (re-seq #"\d+" s))))
 
-(defn remove-nils [l]
-  (remove nil? l))
-
 (defn sum-results [results]
   (apply + results))
 
@@ -92,3 +89,6 @@
 ;; Final result of part2
 (def sum-of-muls2
   (sum-results valid-muls-results2))
+
+(println "sum of part1:" sum-of-muls)
+(println "sum of part2:" sum-of-muls2)
