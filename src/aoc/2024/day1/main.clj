@@ -5,13 +5,13 @@
 ;; but adding all of left col and adding all of right col and then substracting returns the same results
 ;; substracting each row unsorted also returns the same results (basic maths)
 
-(ns main
+(ns aoc.2024.day1.main
   (:require [clojure.string :as str])
   (:gen-class))
 
 ; prepare input
 (def input-data
-  (->> (slurp "2024/day1/input.txt");read data from file
+  (->> (slurp "src/aoc/2024/day1/input.txt");read data from file
        ;split by lines
        (str/split-lines)
        ;split each line into two strings separated by spaces

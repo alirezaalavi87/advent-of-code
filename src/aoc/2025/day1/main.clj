@@ -6,10 +6,10 @@
 ;;
 ;; The password is the number of times that the resulting number is 0 after an operation.
 
-(ns day1.main
+(ns aoc.2025.day1.main
   (:require
    [clojure.string :as str])
-   (:gen-class))
+  (:gen-class))
 
 (defn parse-input
   "the input data converted to an array"
@@ -18,7 +18,7 @@
        (str/split-lines)))
 
 (def input-test
-  (parse-input "2025/day1/input.test.txt"))
+  (parse-input "src/aoc/2025/day1/input.test.txt"))
 
 (defn turn-dial
   "
@@ -54,15 +54,25 @@
   [array]
   (count (filter zero? array)))
 
+(defn print-help []
+  (println "
+           Usage: <input-path>
+
+           <path>: The path to the puzzle's input file
+           "))
+
 (defn -main
   [& args]
-  (let [input (parse-input "2025/day1/input.txt")
+  (when (nil? args)
+    (print-help)
+    (System/exit 1))
+  (let [input-file (first args)
+        input (parse-input input-file)
         dial-history (run-instruction-with-history input)
         zero-count (count-zeros dial-history)]
     (println
      "The number of times the dial landed on 0 after an instruction: "
-     zero-count))
-  (println "args:" args))
+     zero-count)))
 
 ;;;;;;;;;;;;;
 ;; TEST:

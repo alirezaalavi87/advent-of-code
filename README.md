@@ -8,3 +8,12 @@ I tend to mostly focus on Functional Programming style.\
 My goal isn't to solve each puzzle as fast as possible. I want to create a beautiful solutions that satisfies me.
  The speed and performance of how fast a solution runs is also not my priority. I try to keep general performance in mind but I don't want to optimize the code for every bit of performance.
 
+
+## How to run each solution
+
+### With Clojure CLI
+
+The `runner.clj` file helps run each day.
+```sh
+clj -M:run <year> <day> <& args>
+```

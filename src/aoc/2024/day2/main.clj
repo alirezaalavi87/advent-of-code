@@ -5,13 +5,13 @@
 ;;decreasing, AND the difference between two adjacent levels are AT MOST 3
 ;; How many SAFE reports are in this input?
 
-(ns main
+(ns aoc.2024.day2.main
   (:require [clojure.string :as str])
   (:gen-class))
 
 ;; extract each report into vector
 (def input-reports
-  (->> (slurp "./input.txt")
+  (->> (slurp "src/aoc/2024/day2/input.txt")
        (str/split-lines)
        (map #(str/split % #" "))
        (map #(map parse-long %))))

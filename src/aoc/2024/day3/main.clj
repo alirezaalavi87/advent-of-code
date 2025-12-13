@@ -5,7 +5,7 @@
 ;; Extract the correct `mul` instructions, from the text, do the multiplications, and add them all up.
 
 ;;;; Utility
-(ns main
+(ns aoc.2024.day3.main
   (:require [clojure.string :as str])
   (:gen-class))
 
@@ -26,7 +26,7 @@
 
 ;; Read content of file
 ; adds the implicit do() to the beginning, we'll see why in part2
-(def input (str "do()" (slurp "2024/day3/input.txt")))
+(def input (str "do()" (slurp "src/aoc/2024/day3/input.txt")))
 
 (def valid-muls
   (extract-mul-instructions input))
