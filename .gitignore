@@ -1,3 +1,6 @@
 **/input.txt
 .lsp
 .clj-kondo
+.cpcache
+.nrepl-port
+target
