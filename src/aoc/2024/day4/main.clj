@@ -10,11 +10,11 @@
 
 (ns day4.main
   (:require [clojure.string :as str])
-  (:require [util.core :as util])
+  (:require [util.main :as util])
   (:gen-class))
 
 (def input-lines
-  (str/split (slurp "2024/day4/input-test.txt") #"\n"))
+  (str/split (slurp "src/aoc/2024/day4/input-test.txt") #"\n"))
 
 (def input-map
   "Map the grid points to their position"

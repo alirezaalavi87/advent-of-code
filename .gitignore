@@ -4,3 +4,6 @@
 .cpcache
 .nrepl-port
 target
+.clerk/cache
+public/build
+tw
