@@ -17,8 +17,8 @@
   (nextjournal.clerk/show! 'nextjournal.clerk.tap)
 
   (clerk/build! {:paths ["index.md"
-                         "src/aoc/**.md"
-                         "src/aoc/**.clj"]
+                         "src/aoc/2025/**.md"
+                         "src/aoc/2025/**.clj"]
                  :index "index.md"
                  ; :compile-css true
                  ; :ssr true
