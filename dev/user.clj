@@ -18,6 +18,7 @@
 
   (clerk/build! {:paths ["src/aoc/**.md"
                          "src/aoc/**.clj"]
+                 :index "src/aoc/index.md"
                  ; :compile-css true
                  ; :ssr true
                  })
