@@ -23,7 +23,8 @@
   :nextjournal/clerk {:exec-fn nextjournal.clerk/build!
                                ;; notebooks to be built, accepts globs patterns
                       :exec-args {:git/url "https://github.com/nextjournal/clerk-demo"
-                                  :paths ["src/aoc/**.md"
+                                  :paths ["index.md"
+                                          "src/aoc/**.md"
                                           "src/aoc/**.clj"]}
-                                  :index "src/aoc/index.md"
+                                  :index "index.md"
                       :main-opts ["-m" "babashka.cli.exec"]}}}

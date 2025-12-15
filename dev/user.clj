@@ -16,9 +16,10 @@
   ;; Show the 🚰 Tap Inspector to inspect values using tap>
   (nextjournal.clerk/show! 'nextjournal.clerk.tap)
 
-  (clerk/build! {:paths ["src/aoc/**.md"
+  (clerk/build! {:paths ["index.md"
+                         "src/aoc/**.md"
                          "src/aoc/**.clj"]
-                 :index "src/aoc/index.md"
+                 :index "index.md"
                  ; :compile-css true
                  ; :ssr true
                  })
