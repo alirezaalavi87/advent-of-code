@@ -1,5 +1,3 @@
-#!/usr/bin/env clojure
-
 ;; The task is to get the total difference between the values of left column and right column of input
 ;; The task says the you should sort them first, and substract each column and add the total difference
 ;; but adding all of left col and adding all of right col and then substracting returns the same results
@@ -30,7 +28,7 @@
 
 (def total-difference
   (apply +
-         (map Math/abs
+         (map abs
               (map - first-col-sorted second-col-sorted))))
 
 ; Calculate everything at once. sort each list once instead of twice
@@ -46,7 +44,7 @@
     (apply +
            ;take the absolute value of each substraction, because we are looking
            ; for the difference between two cols
-           (map Math/abs
+           (map abs
                 ;substract cols
                 (map - first-col-sorted second-col-sorted)))))
 

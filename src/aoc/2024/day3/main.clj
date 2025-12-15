@@ -1,5 +1,3 @@
-#!/usr/bin/env clojure
-
 ;; The goal of the input is to multiply numbers with this exact syntax: `mul(number, number)`
 ;; But since it is corrupted, there are other characters and invalid `mul` instructions.
 ;; Extract the correct `mul` instructions, from the text, do the multiplications, and add them all up.

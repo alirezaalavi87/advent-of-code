@@ -1,5 +1,3 @@
-#!/usr/bin/env clojure
-
 ;; The task: Each row in input is a report and each value in each report is
 ;;a level. SAFE reports are ones that are either all increasing or all
 ;;decreasing, AND the difference between two adjacent levels are AT MOST 3
