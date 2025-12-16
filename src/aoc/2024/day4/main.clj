@@ -1,3 +1,4 @@
+;; TODO
 ;; The goal is to find all instances of "XMAS" in the input.(count)
 ;;The word can be written in horizontal,vertical and diagonal, forwards and backwards.
 
@@ -8,9 +9,9 @@
 ;;  - Get the 3 elements diagonal to it (right-below)
 ;; Now we have 3 sets of 4 elements. We check if they match "XMAS" forwards or backwards, if yes, we add to the count
 
-(ns day4.main
+(ns aoc.2024.day4.main
   (:require [clojure.string :as str])
-  (:require [util.main :as util])
+  (:require [aoc.util.main :as util])
   (:gen-class))
 
 (def input-lines

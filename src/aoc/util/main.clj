@@ -1,6 +1,6 @@
 ;; Helper Functions of AoC
 
-(ns util.main
+(ns aoc.util.main
   (:require [clojure.data.int-map :as i]))
 
 ;; Thanks to narimiran/aoc2024
