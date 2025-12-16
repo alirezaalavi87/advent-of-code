@@ -141,56 +141,74 @@
 ;; We will grow the size of the input and measure the execution time (MET)
 #_(require '[criterium.core :as c])
 
-(def full-input
-  (parse-input "src/aoc/2025/day1/input.txt"))
-
-^{:nextjournal.clerk/visibility {:result :show}}
-(def input-sizes
-  "Generate smaple input sizes (how much of the original input to take)"
-  (filter #(< % (count full-input)) (take 10 (iterate #(+ % 500) 1))))
-
-(defn get-n-first-operations [n]
-  (take n full-input))
-
-(defn benchmark-with-input [f i]
-  (c/quick-benchmark* #(f i) nil))
-
-(defn generate-performance-data [f input-sizes]
-  (mapv (fn [n]
-          (let [input (get-n-first-operations n)
-                benchmark-result (benchmark-with-input f input)]
-            {:input-size n
-             :mean-execution-time (first (:mean benchmark-result))}))
-        input-sizes))
-
-(defn visualize-performance-trend [performance-data]
-  (let [input-sizes (mapv :input-size performance-data)
-        execution-times (mapv :mean-execution-time performance-data)]
-    (clerk/plotly
-     {:data [{:type "scatter"
-              :mode "lines+markers"
-              :x input-sizes
-              :y execution-times
-              :name "Execution Time"}]
-      :layout {:title "Function Performance vs. Input Size"
-               :xaxis {:title "Input Size"
-                       :type "linear"}
-               :yaxis {:title "Mean Execution Time (seconds)"
-                       :type "linear"}}})))
-
-^{:nextjournal.clerk/visibility {:result :show}}
-(def performance-data
-  (generate-performance-data part-1 input-sizes))
-
+; ```clojure
+; (def full-input
+;   (parse-input "src/aoc/2025/day1/input.txt"))
+;
+; ^{:nextjournal.clerk/visibility {:result :show}}
+; (def input-sizes
+;   "Generate smaple input sizes (how much of the original input to take)"
+;   (filter #(< % (count full-input)) (take 10 (iterate #(+ % 500) 1))))
+;
+; (defn get-n-first-operations [n]
+;   (take n full-input))
+;
+; (defn benchmark-with-input [f i]
+;   (c/quick-benchmark* #(f i) nil))
+; ```
+;; Benchmark funtion `f` for every input size sample in `input-sizes`
+; ```clojure
+; (defn generate-performance-data [f input-sizes]
+;   (mapv (fn [n]
+;           (let [input (get-n-first-operations n)
+;                 benchmark-result (benchmark-with-input f input)]
+;             {:input-size n
+;              :mean-execution-time (first (:mean benchmark-result))}))
+;         input-sizes))
+; ```
+; ```clojure
+; (defn visualize-performance-trend [performance-data]
+;   (let [input-sizes (mapv :input-size performance-data)
+;         execution-times (mapv :mean-execution-time performance-data)]
+;     (clerk/plotly
+;      {:data [{:type "scatter"
+;               :mode "lines+markers"
+;               :x input-sizes
+;               :y execution-times
+;               :name "Execution Time"}]
+;       :layout {:title "Function Performance vs. Input Size"
+;                :xaxis {:title "Input Size"
+;                        :type "linear"}
+;                :yaxis {:title "Mean Execution Time (seconds)"
+;                        :type "linear"}}})))
+;
+; (def performance-data
+;   (generate-performance-data part-1 input-sizes))
+; ```
+;
 ;; Now visualize the rate of Mean Execution Time in relation to the input size.
-;; We can see that the mean execution time(MET) grows almost linearly.\
-;; - For input size 501 it took 299(us).\
-;; - For input size 4001 it took 0.0016(ms).\
-;; - The input grew by ~8 while the MET grew by ~5.3.\
+;; ```clojure
+;; (visualize-performance-trend performance-data)
+;; ```
+
+^{:nextjournal.clerk/visibility {:code :hide}}
+(clerk/image "src/aoc/2025/day1/performance-benchmark-trend.png")
+
+;; We can see that the mean execution time(MET) grows almost linearly.
+;; - For input size 501 it took 299(us).
+;; - For input size 4001 it took 0.0016(ms).
+;; - The input grew by ~8 while the MET grew by ~5.3.
 ;;
 ;; This is pretty good performance.
-^{:nextjournal.clerk/visibility {:result :show}}
-(visualize-performance-trend performance-data)
+
+; ## Part 2
+; count the number of times any click causes the dial to point at 0, regardless of whether it happens during a rotation or at the end of one.
+; Count each full rotation. that's a zero.
+; - during the turning, each full rotation is a 0
+; - at the end, the dial might land on a 0, that's another 0
+; - sum these as the count of `zero-passes` for each operation.
+; - keep count of how many `zero-passes` you get for each operation
+; - sum `zero-passes` of all operations together
 
 ;; ## Unit Tests
 ;; Turn dial left
