@@ -18,10 +18,7 @@ clj -M:nextjournal/clerk nextjournal.clerk/serve! --watch-paths src --port 7777
 ### From the REPL
 Take a look at the `dev/user.clj`for running the server, evaluating individual notebooks, etc.
 
-Evaluate expressions from within your editor if you can, or start a REPL and run clerk commands
-```sh
-
-```
+Evaluate expressions from within your editor if you can, or start a REPL and run clerk commands.
 
 ## How to build the Clerk notebooks
 run
