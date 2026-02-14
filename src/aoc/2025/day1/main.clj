@@ -1,10 +1,3 @@
-;; # Day1: Secret Enterance
-;;
-;; You have a circular dial (like most safes) that goes from 0 to 99.
-;; The end reaches the start and vice versa: 98 -> 99 -> 0 and 1 -> 0-> 99\
-;; The dial starts at 50\
-;; The input tells you to go in which direction and how many numbers.\
-;; (Right gets larger, Left gets smaller). We will call this an operation.
 ^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
 (ns aoc.2025.day1.main
   {:nextjournal.clerk/auto-expand-results? true
@@ -13,9 +6,17 @@
    [nextjournal.clerk :as clerk]
    [nextjournal.clerk.viewer :as viewer]
    [clojure.string :as str]
-   [criterium.core :as c])
-  (:gen-class))
+   [criterium.core :as c]))
 
+;; # Day1: Secret Enterance
+;;
+;; You have a circular dial (like most safes) that goes from 0 to 99.
+;; The end reaches the start and vice versa: 98 -> 99 -> 0 and 1 -> 0-> 99\
+;; The dial starts at 50\
+;; The input tells you to go in which direction and how many numbers.\
+;; (Right gets larger, Left gets smaller). We will call this an operation.
+
+^{::clerk/visibility {:code :hide :result :hide}}
 (defn defn? [cell]
   (some-> cell :result :nextjournal/value ::clerk/var-from-def deref fn?))
 
@@ -35,7 +36,7 @@
 
 ;; ## Parsing input and mock input
 (defn parse-input
-  "Parse the input data to array of strings"
+  "Parse the input data to vector of strings"
   [path]
   (->> (slurp path)
        (str/split-lines)))
@@ -67,7 +68,6 @@
   instruction.
   "
   [input]
-
   (vec (reductions (fn [current-val instruction]
                      (let [dir (first instruction)
                            steps (Integer/parseInt (str/join (rest instruction)))]
@@ -224,8 +224,7 @@
 (assert (= (turn-dial 99 \R 1) 0))
 
 ^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
-(defn -main
-  [& args]
+(defn -main [& args]
   (when (nil? args)
     (print-help)
     (System/exit 1))
