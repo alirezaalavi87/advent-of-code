@@ -1,4 +1,6 @@
 **/input.txt
+**/question.txt
+
 .lsp
 .clj-kondo
 .cpcache
