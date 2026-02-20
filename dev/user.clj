@@ -13,6 +13,8 @@
   ;; either call `clerk/show!` explicitly to show a given notebook, or use the File Watcher described below.
   (clerk/show! "src/aoc/2025/day1/main.clj")
 
+  (clerk/halt!)
+
   ;; Show the 🚰 Tap Inspector to inspect values using tap>
   (nextjournal.clerk/show! 'nextjournal.clerk.tap)
 
@@ -20,7 +22,7 @@
                          "src/aoc/2025/**.md"
                          "src/aoc/2025/**.clj"]
                  ; :compile-css true
-                 :ssr true
+                 ; :ssr true
                  :index "index.md"})
 
   (clerk/clear-cache!))
