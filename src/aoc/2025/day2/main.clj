@@ -5,7 +5,8 @@
   (:require
    [nextjournal.clerk :as clerk]
    [nextjournal.clerk.viewer :as viewer]
-   [clojure.string :as str]))
+   [clojure.string :as str]
+   [clojure.test :refer [deftest is testing]]))
 
 ;; FIXME these functions for configuring how clerk shows results are repeated in every notebook.
 ;; Make it a global config
@@ -59,10 +60,16 @@
        str
        (map (comp read-string str))))
 
-; Testing the function
-(assert (= (num->digits 123) [1 2 3]))
-(assert (= (num->digits -123) [1 2 3]))
-(assert (= (num->digits 0) [0]))
+(deftest num->digits-test
+  (testing "Positive numbers"
+    (is (= (num->digits 1) [1]))
+    (is (= (num->digits 123) [1 2 3]))
+    (is (= (num->digits 1234567899) [1 2 3 4 5 6 7 8 9 9])))
+  (testing "Negative numbers"
+    (is (= (num->digits -1) [1]))
+    (is (= (num->digits -123) [1 2 3])))
+  (testing "Edge cases"
+    (is (= (num->digits 0) [0]))))
 
 ; ## Part 1
 ;
@@ -102,20 +109,28 @@
     (repeated-twice? n) false
     :else true))
 
-; Test `valid-id?`
-(assert (true? (valid-id? 0)))
-(assert (false? (valid-id? 123123)))
-(assert (false? (valid-id? 11)))
-(assert (true? (valid-id? 789)))
-(assert (true? (valid-id? 999)))
+(deftest valid-id?-test
+  (testing "Valid IDs"
+    (is (true? (valid-id? 0)))
+    (is (true? (valid-id? 789)))
+    (is (true? (valid-id? 999))))
+  (testing "Invalid IDs"
+    (is (false? (valid-id? 123123)))
+    (is (false? (valid-id? 11)))))
 
-(defn get-invalid-from-range [[start end]]
+; Get all invalid IDs from specified range.
+(defn get-invalid-from-range
+  "Get invalid IDs from specified range.
+  Returns seq of invalid IDs."
+  [[start end]]
+  {:pre [(number? start)
+         (number? end)]}
   (let  [range-nums (range start (inc end))]
     (filter number? (map #(if (not (valid-id? %)) % nil) range-nums))))
 
-;; Test `get-invalid-from-range`
-(assert (= (get-invalid-from-range [11 22]) [11 22]))
-(assert (= () (get-invalid-from-range [0 10])))
+(deftest get-invalid-from-range-test
+  (is (= (get-invalid-from-range [11 22]) [11 22]))
+  (is (= () (get-invalid-from-range [0 10]))))
 
 ; Final answer to part 1:
 (defn sum-invalid-ids
@@ -126,7 +141,7 @@
         invalid-ids-sum (apply + (map #(apply + %) invalid-ids))]
     invalid-ids-sum))
 
-; Now testing the results for part 1
+; Now make sure we get correct results with test input for part 1
 (assert (= 1227775554 (sum-invalid-ids test-input)))
 
 ; Performance for the real input is really slow. I think it can be fun optimizing it!
@@ -134,12 +149,7 @@
 ; (time (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt")))
 ; ;=> (out) "Elapsed time: 15928.037254 msecs"
 ; ```
+; Parsing the input is very fast (0.5 ms) the rest is very slow.
 
 ; ## Part 2
 
-
-^{:nextjournal.clerk/visibility {:code :hide :result :hide}}
-(defn -main [& args]
-  (let [input-file (first args)
-        input (parse-input input-file)]
-    [sum-invalid-ids input]))
