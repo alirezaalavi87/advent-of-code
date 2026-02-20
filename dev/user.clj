@@ -19,10 +19,9 @@
   (clerk/build! {:paths ["index.md"
                          "src/aoc/2025/**.md"
                          "src/aoc/2025/**.clj"]
-                 :index "index.md"
                  ; :compile-css true
-                 ; :ssr true
-                 })
+                 :ssr true
+                 :index "index.md"})
 
   (clerk/clear-cache!))
 
