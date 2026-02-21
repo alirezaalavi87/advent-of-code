@@ -6,7 +6,7 @@
    [nextjournal.clerk :as clerk]
    [nextjournal.clerk.viewer :as viewer]
    [clojure.string :as str]
-   [clojure.test :refer [deftest is testing]]))
+   [clojure.test :refer [deftest is testing run-tests]]))
 
 ;; FIXME these functions for configuring how clerk shows results are repeated in every notebook.
 ;; Make it a global config
@@ -151,5 +151,7 @@
 ; ```
 ; Parsing the input is very fast (0.5 ms) the rest is very slow.
 
-; ## Part 2
 
+; ---
+; Running all tests
+(run-tests)
