@@ -96,25 +96,12 @@
 ;; Test the result (`nil` means correct)
 (assert (= (part-1 test-input) 3))
 
-(c/quick-bench (part-1 (parse-input "src/aoc/2025/day1/input.txt")))
 ;; ### Benchmarking
 ;; We'll use the [criterium](https://github.com/hugoduncan/criterium) library for benchmarking.
 ;; The commands are run in the REPL
-;; Benchmark with test data:
-;; ```clojure
-;; (require '[criterium.core :as c])
-;; (c/quick-bench (part-1 test-input))
-;; (count test-input) ; 10
-;; ```
-;; Results:
-;; ```
-;; Evaluation count : 195798 in 6 samples of 32633 calls.
-;; Execution time mean : 3.628046 µs
-;; Execution time std-deviation : 699.498474 ns
-;; Execution time lower quantile : 3.065177 µs ( 2.5%)
-;; Execution time upper quantile : 4.401143 µs (97.5%)
-;; Overhead used : 6.574883 ns
-;; ```
+;;
+;; Benchmarks are run on my laptop with 2600MHz RAM and i7-9750H CPU
+;;
 ;; Benchmark with actual input:
 ;; ```clojure
 ;; (require '[criterium.core :as c])
@@ -134,7 +121,6 @@
 ;; #### Input size vs. performance
 ;;
 ;; We will grow the size of the input and measure the execution time (MET)
-#_(require '[criterium.core :as c])
 
 ; ```clojure
 ; (def full-input
@@ -151,7 +137,7 @@
 ; (defn benchmark-with-input [f i]
 ;   (c/quick-benchmark* #(f i) nil))
 ; ```
-;; Benchmark funtion `f` for every input size sample in `input-sizes`
+; Benchmark funtion `f` for every input size sample in `input-sizes`
 ; ```clojure
 ; (defn generate-performance-data [f input-sizes]
 ;   (mapv (fn [n]
@@ -304,24 +290,21 @@
 
 ; ### Benchmark
 
-; The performance seems pretty good too. Almost instantaneous result
-; on my old tiny HP Prodesk with intel i5 6500T CPU.\
-; Note that benchmarks for part1 are from my laptop with much faster RAM and i7 9750H CPU.
-; The benchmarks for part1 on this small boi give a mean time of 3ms.
-;
-; TODO: run benchmarks for this part also with laptop
+; The performance seems pretty good too. Almost instantaneous results.
 
+#_(c/quick-bench (part-1 (parse-input "src/aoc/2025/day1/input.txt")))
+#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day1/input.txt")))
 ; ```clojure
 ; (c/quick-bench (part-2 (parse-input "src/aoc/2025/day1/input.txt")))
 ; ```
 ; Results:
 ; ```
-; (out) Evaluation count : 126 in 6 samples of 21 calls.
-; (out)              Execution time mean : 5.179176 ms
-; (out)     Execution time std-deviation : 257.478597 µs
-; (out)    Execution time lower quantile : 4.930603 ms ( 2.5%)
-; (out)    Execution time upper quantile : 5.471735 ms (97.5%)
-; (out)                    Overhead used : 11.240677 ns
+; (out) Evaluation count : 102 in 6 samples of 17 calls.
+; (out)              Execution time mean : 6.306541 ms
+; (out)     Execution time std-deviation : 290.425751 µs
+; (out)    Execution time lower quantile : 6.013446 ms ( 2.5%)
+; (out)    Execution time upper quantile : 6.694897 ms (97.5%)
+; (out)                    Overhead used : 10.846345 ns
 ; ```
 
 ; ### Unit tests
