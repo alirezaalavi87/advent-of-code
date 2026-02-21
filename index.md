@@ -19,3 +19,11 @@ Task                                                                    | Notebo
 ---                                                                     | ---                                   | ---           | ---
 [Day 1: Secret Entrance](https://adventofcode.com/2025/day/1)           | [day 1](src/aoc/2025/day1/main)   | Bench, Viz    | Lowkey proud of how concise and clean the actual solution is
 [Day 2: Gift Shop](https://adventofcode.com/2025/day/1)           | [day 2](src/aoc/2025/day2/main)   | |
+
+## AoC 2024
+
+2024 wasn't done with clerk notebook. I was just learning Clojure and functional programming and was trying my best to understand and see the benefits of functional programming.
+
+In some puzzles, I wrote with the default style of JS that I was used to (A bit functional but more procedural) and then tried to make it as functional as possible. The comparison between "normal" JS, FP style JS and Clojure are interesting.
+
+You can read the solutions [from source](https://github.com/alirezaalavi87/advent-of-code/tree/main/src/aoc/2024)
