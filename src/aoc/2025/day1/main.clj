@@ -72,13 +72,6 @@
                    50 ; initial value
                    input)))
 
-(defn print-help []
-  (println "
-           Usage: <input-path>
-
-           <input-path>: The path to the puzzle's input file
-           "))
-
 ;; ## Part 1
 ;; The password is the number of times that the resulting number is 0 after an operation.
 ;; - Keep the result after every operation
