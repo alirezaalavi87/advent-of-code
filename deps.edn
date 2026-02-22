@@ -22,7 +22,7 @@
           :ns-default build}
   :nextjournal/clerk {:exec-fn nextjournal.clerk/build!
                                ;; notebooks to be built, accepts globs patterns
-                      :exec-args {:git/url "https://github.com/nextjournal/clerk-demo"
+                      :exec-args {:git/url "https://github.com/alirezaalavi87/advent-of-code"
                                   :paths ["index.md"
                                           "src/aoc/2025/**.md"
                                           "src/aoc/2025/**.clj"]}
