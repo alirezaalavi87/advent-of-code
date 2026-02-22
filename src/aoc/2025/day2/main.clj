@@ -177,16 +177,19 @@
 ; ```
 ; 13.73ms vs. 11.32ms mean execution time after optimizations. That's ~18%.
 
-; Also, make sure `num->digits?` returns a vector instead of a list, with `mapv` instead of `map`,
-; that itself will bring enhancements.
-; We also see from our profiling result that `read-string` which is used throughout the code to
-; parse string numbers to number, is taking much time. So we will use Java's `Integer/parseInt`.
+; To optimize `num->digits?`
+; - make sure `num->digits?` returns a vector instead of a list, with `mapv` instead of `map`,
+;   that itself will bring enhancements.
+; - We also see from our profiling result that `read-string` which is used throughout the code to
+;   parse string numbers to number, is taking much time. So we will use `parse-long`
+;   which is much better suited for this and has the same performance as `Integer/parseInt`.
+; - Remove `abs` since we konw all our numbers are positive
+
 (defn num->digits-opt
   [n]
   (->> n
-       abs
        str
-       (mapv (comp Integer/parseInt str))))
+       (mapv (comp parse-long str))))
 
 ; Let's make `sum-invalid-ids` use our optimized version of functions and benchmark them.
 ;
