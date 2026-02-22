@@ -179,13 +179,14 @@
 
 ; Also, make sure `num->digits?` returns a vector instead of a list, with `mapv` instead of `map`,
 ; that itself will bring enhancements.
-
+; We also see from our profiling result that `read-string` which is used throughout the code to
+; parse string numbers to number, is taking much time. So we will use Java's `Integer/parseInt`.
 (defn num->digits-opt
   [n]
   (->> n
        abs
        str
-       (mapv (comp read-string str))))
+       (mapv (comp Integer/parseInt str))))
 
 ; Let's make `sum-invalid-ids` use our optimized version of functions and benchmark them.
 ;
@@ -195,16 +196,11 @@
 ;  #(c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt"))))
 ; ; =>
 ; ; (out) Evaluation count : 6 in 6 samples of 1 calls.
-; ; (out)              Execution time mean : 6.657661 sec
-; ; (out)     Execution time std-deviation : 79.227899 ms
-; ; (out)    Execution time lower quantile : 6.566088 sec ( 2.5%)
-; ; (out)    Execution time upper quantile : 6.784336 sec (97.5%)
+; ; (out)              Execution time mean : 1.239140 sec
+; ; (out)     Execution time std-deviation : 43.134107 ms
+; ; (out)    Execution time lower quantile : 1.194249 sec ( 2.5%)
+; ; (out)    Execution time upper quantile : 1.294277 sec (97.5%)
 ; ; (out)                    Overhead used : 6.769222 ns
-; ; (out)
-; ; (out) Found 2 outliers in 6 samples (33.3333 %)
-; ; (out) 	low-severe	 1 (16.6667 %)
-; ; (out) 	low-mild	 1 (16.6667 %)
-; ; (out)  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ;
 ; (c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt")))
 ; ; =>
@@ -215,9 +211,9 @@
 ; ; (out)    Execution time upper quantile : 9.872587 sec (97.5%)
 ; ; (out)                    Overhead used : 6.769222 ns
 ; ```
-; We got a **~31% increase in performance**. That's good.\
-; I'm still not fully satisfied though, these optimizations were pretty cookie-cutter.
-; I have to learn more about Clojure optimization. I'm aiming for at least 50-60% improvements.
+; Boy, Oh boy! We got ~87.3% increase in performance after our optimizations!\
+; These are still cookie-cutter optimizations, tough. I think we can get much further
+; with more in depth opts, but I don't know how to.
 
 ; ## Running all tests
 (run-tests)
