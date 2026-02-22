@@ -6,7 +6,8 @@
    [nextjournal.clerk :as clerk]
    [nextjournal.clerk.viewer :as viewer]
    [clojure.string :as str]
-   [clojure.test :refer [deftest is testing run-tests]]))
+   [clojure.test :refer [deftest is testing run-tests]]
+   [criterium.core :as c]))
 
 ;; FIXME these functions for configuring how clerk shows results are repeated in every notebook.
 ;; Make it a global config
@@ -126,7 +127,7 @@
   {:pre [(number? start)
          (number? end)]}
   (let  [range-nums (range start (inc end))]
-    (filter number? (map #(if (not (valid-id? %)) % nil) range-nums))))
+    (filter number? (map #(when (not (valid-id? %)) %) range-nums))))
 
 (deftest get-invalid-from-range-test
   (is (= (get-invalid-from-range [11 22]) [11 22]))
@@ -137,21 +138,86 @@
   "Takes input of puzzle which is of type [:seq [:vec [:number]]],
   gets invalid IDs from each specified range and sums them."
   [input]
-  (let [invalid-ids (filter not-empty (map get-invalid-from-range input))
-        invalid-ids-sum (apply + (map #(apply + %) invalid-ids))]
+  (let [invalid-ids (flatten (map get-invalid-from-range input))
+        invalid-ids-sum (reduce + invalid-ids)]
     invalid-ids-sum))
 
 ; Now make sure we get correct results with test input for part 1
 (assert (= 1227775554 (sum-invalid-ids test-input)))
 
-; Performance for the real input is really slow. I think it can be fun optimizing it!
-; ```clojure
-; (time (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt")))
-; ;=> (out) "Elapsed time: 15928.037254 msecs"
-; ```
+; ### Optimization
+
+; Performance for the real input is really slow. I think it can be fun optimizing it!\
 ; Parsing the input is very fast (0.5 ms) the rest is very slow.
 
+; Using `clj-async-profiler` to profile the code and identify the bottlenecks, we see that `repeated-twice?`
+; takes the most time. And `count` takes the most time within `repeated-twice?`.
+(clerk/image "src/aoc/2025/day2/assets/profiling1.png")
 
-; ---
-; Running all tests
+; Let's optimize `repeated-twice?` by eliminating the two nested `reverse` calls
+; by using `drop` instead and doing one less division.
+(defn repeated-twice-opt?
+  [^long n]
+  (let [digits (num->digits n)
+        len (count digits)
+        half-len (quot len 2)
+        first-half (take half-len digits)
+        second-half (drop half-len digits)]
+    (if (odd? len)
+      false
+      (= first-half second-half))))
+
+; Comparing different implementations of `repeated-twice?`
+; ```clojure
+; (def random-numbers
+;   (repeatedly 10000 #(rand-int 100000000)))
+;
+; (c/quick-bench (map repeated-twice? random-numbers))
+; (c/quick-bench (map repeated-twice-opt? random-numbers))
+; ```
+; 13.73ms vs. 11.32ms mean execution time after optimizations. That's ~18%.
+
+; Also, make sure `num->digits?` returns a vector instead of a list, with `mapv` instead of `map`,
+; that itself will bring enhancements.
+
+(defn num->digits-opt
+  [n]
+  (->> n
+       abs
+       str
+       (mapv (comp read-string str))))
+
+; Let's make `sum-invalid-ids` use our optimized version of functions and benchmark them.
+;
+; ```clojure
+; (with-redefs-fn {#'repeated-twice? repeated-twice-opt?
+;                  #'num->digits num->digits-opt}
+;  #(c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt"))))
+; ; =>
+; ; (out) Evaluation count : 6 in 6 samples of 1 calls.
+; ; (out)              Execution time mean : 6.657661 sec
+; ; (out)     Execution time std-deviation : 79.227899 ms
+; ; (out)    Execution time lower quantile : 6.566088 sec ( 2.5%)
+; ; (out)    Execution time upper quantile : 6.784336 sec (97.5%)
+; ; (out)                    Overhead used : 6.769222 ns
+; ; (out)
+; ; (out) Found 2 outliers in 6 samples (33.3333 %)
+; ; (out) 	low-severe	 1 (16.6667 %)
+; ; (out) 	low-mild	 1 (16.6667 %)
+; ; (out)  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+;
+; (c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt")))
+; ; =>
+; ; (out) Evaluation count : 6 in 6 samples of 1 calls.
+; ; (out)              Execution time mean : 9.713714 sec
+; ; (out)     Execution time std-deviation : 127.283684 ms
+; ; (out)    Execution time lower quantile : 9.555073 sec ( 2.5%)
+; ; (out)    Execution time upper quantile : 9.872587 sec (97.5%)
+; ; (out)                    Overhead used : 6.769222 ns
+; ```
+; We got a **~31% increase in performance**. That's good.\
+; I'm still not fully satisfied though, these optimizations were pretty cookie-cutter.
+; I have to learn more about Clojure optimization. I'm aiming for at least 50-60% improvements.
+
+; ## Running all tests
 (run-tests)

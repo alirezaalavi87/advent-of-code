@@ -26,5 +26,5 @@
                                   :paths ["index.md"
                                           "src/aoc/2025/**.md"
                                           "src/aoc/2025/**.clj"]}
-                                  :index "index.md"
+                      :index "index.md"
                       :main-opts ["-m" "babashka.cli.exec"]}}}
