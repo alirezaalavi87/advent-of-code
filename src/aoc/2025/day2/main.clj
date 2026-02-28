@@ -163,9 +163,7 @@
         half-len (quot len 2)
         first-half (take half-len digits)
         second-half (drop half-len digits)]
-    (if (odd? len)
-      false
-      (= first-half second-half))))
+    (= first-half second-half)))
 
 ; Comparing different implementations of `repeated-twice?`
 ; ```clojure
@@ -239,18 +237,18 @@
 ;                  #'num->digits num->digits-opt2}
 ;  #(c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt"))))
 ; =>
-; (out) Evaluation count : 6 in 6 samples of 1 calls.
-; (out)              Execution time mean : 927.130309 ms
-; (out)     Execution time std-deviation : 30.063344 ms
-; (out)    Execution time lower quantile : 898.622286 ms ( 2.5%)
-; (out)    Execution time upper quantile : 972.890815 ms (97.5%)
-; (out)                    Overhead used : 6.691813 ns
-; (out)
-; (out) Found 1 outliers in 6 samples (16.6667 %)
-; (out) 	low-severe	 1 (16.6667 %)
-; (out)  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+; ; (out) Evaluation count : 6 in 6 samples of 1 calls.
+; ; (out)              Execution time mean : 927.130309 ms
+; ; (out)     Execution time std-deviation : 30.063344 ms
+; ; (out)    Execution time lower quantile : 898.622286 ms ( 2.5%)
+; ; (out)    Execution time upper quantile : 972.890815 ms (97.5%)
+; ; (out)                    Overhead used : 6.691813 ns
+; ; (out)
+; ; (out) Found 1 outliers in 6 samples (16.6667 %)
+; ; (out)   low-severe   1 (16.6667 %)
+; ; (out)  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
 ; ```
-; This make our total optimizations **~90% faster** than our initial solution.
+; This make our total optimizations **~10.5x faster** than our initial solution.
 
 ; ## Running all tests
 (run-tests)
