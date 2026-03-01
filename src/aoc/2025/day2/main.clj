@@ -59,7 +59,7 @@
   (->> n
        abs
        str
-       (map (comp read-string str))))
+       (mapv (comp read-string str))))
 
 (deftest num->digits-test
   (testing "Positive numbers"
@@ -105,19 +105,19 @@
       (= first-half second-half))))
 
 ; `valid-id?` is the main function for checking if an ID is valid or not.
-(defn valid-id? [n]
-  (cond
-    (repeated-twice? n) false
-    :else true))
+; This being it's own function makes the logic slightly more understandable and
+; flexible.
+(defn invalid-id? [n]
+  (repeated-twice? n))
 
-(deftest valid-id?-test
+(deftest invalid-id?-test
   (testing "Valid IDs"
-    (is (true? (valid-id? 0)))
-    (is (true? (valid-id? 789)))
-    (is (true? (valid-id? 999))))
+    (is (false? (invalid-id? 0)))
+    (is (false? (invalid-id? 789)))
+    (is (false? (invalid-id? 999))))
   (testing "Invalid IDs"
-    (is (false? (valid-id? 123123)))
-    (is (false? (valid-id? 11)))))
+    (is (true? (invalid-id? 123123)))
+    (is (true? (invalid-id? 11)))))
 
 ; Get all invalid IDs from specified range.
 (defn get-invalid-from-range
@@ -126,17 +126,18 @@
   [[start end]]
   {:pre [(number? start)
          (number? end)]}
-  (let  [range-nums (range start (inc end))]
-    (filter number? (map #(when (not (valid-id? %)) %) range-nums))))
+  (let [range-nums (range start (inc end))]
+    (filter number? (map #(when (invalid-id? %) %) range-nums))))
 
 (deftest get-invalid-from-range-test
-  (is (= (get-invalid-from-range [11 22]) [11 22]))
-  (is (= () (get-invalid-from-range [0 10]))))
+  (is (= (get-invalid-from-range [11 22]) '(11 22)))
+  (is (= (get-invalid-from-range [0 10]) ())))
 
 ; Final answer to part 1:
 (defn sum-invalid-ids
-  "Takes input of puzzle which is of type [:seq [:vec [:number]]],
-  gets invalid IDs from each specified range and sums them."
+  "Takes input of puzzle which, gets invalid IDs from each specified range and sums them.
+
+  Example input: `([11 22] [349 500] [730 1203])`"
   [input]
   (let [invalid-ids (flatten (map get-invalid-from-range input))
         invalid-ids-sum (reduce + invalid-ids)]
