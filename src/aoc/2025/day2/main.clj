@@ -287,11 +287,13 @@
   [number n]
   (loop [current-num (str number)
          groups []]
-    (if (str/blank? current-num)
-      groups
-      (recur
-       (str/join (second (split-at n (str/split current-num #""))))
-       (conj groups (str/join (first (split-at n (str/split current-num #"")))))))))
+    (let [num-digits (vec current-num)
+          num-digits-split (split-at n num-digits)]
+      (if (str/blank? current-num)
+        groups
+        (recur
+         (str/join (second num-digits-split))
+         (conj groups (str/join (first num-digits-split))))))))
 
 (deftest num-split-n-test
   (is (= ["112" "112" "112"] (num-split-n 112112112 3)))
@@ -335,7 +337,20 @@
 ; Check if the answer for test input is correct:
 (assert (= 4174379265 (part-2 test-input)))
 
-; (time (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; 50857215650
+(comment
+  (part-2 (parse-input "src/aoc/2025/day2/input.txt")) ; => 50857215650
+  )
+
+; ### Optimization
+
+; Our slution is **insanely** slow as of now. (~45s for full input).
+;
+; Let's profile `part-2` with the full input.
+(clerk/image "src/aoc/2025/day2/assets/profp2-1.png")
+; We see that the main culprit is `num-split-n`. Specifically, `string/join` within it.
+;
+; TODO: I think the algorithm itself is a bruteforce algorithm and can't be very performant. Maybe create
+; a better algorithm?
 
 ; ## Running all tests
 (run-tests)
