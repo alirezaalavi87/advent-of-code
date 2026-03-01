@@ -251,5 +251,91 @@
 ; ```
 ; This make our total optimizations **~10.5x faster** than our initial solution.
 
+; ## Part 2
+
+; >Now, an ID is invalid if it is made only of some sequence of digits repeated at least twice.
+;  So, 12341234 (1234 two times), 123123123 (123 three times), 1212121212 (12 five times),
+;  and 1111111 (1 seven times) are all invalid IDs.
+
+; ### Approach
+
+; We only need to find repeated numbers. To do that
+; first approach that comes to my mind is to divide number by groups of n digits,
+; where $n \le \text{number length}$ and check in which $n$, all divided groups
+; are equal.
+
+; let our number be 112112112
+;
+; divide by groups of 1 (n=1) => [1 1 2 1 1 2 1 1 2]\
+; groups are not equal.
+;
+; n=2 => [11 21 12 11 2]\
+; groups are not equal
+;
+; n=3 => [112 112 112]\
+; groups are equal ✅
+
+; The groups should be strings of numbers so a gruop like "001" can still exist
+
+; This is somewhat bruteforce but it works.
+
+; ### Implementation
+
+(defn num-split-n
+  "Split digits of number to groups of 'n'.
+  A group will be a string of digits to be able to represent groups such as '001' which is not a valid number."
+  [number n]
+  (loop [current-num (str number)
+         groups []]
+    (if (str/blank? current-num)
+      groups
+      (recur
+       (str/join (second (split-at n (str/split current-num #""))))
+       (conj groups (str/join (first (split-at n (str/split current-num #"")))))))))
+
+(deftest num-split-n-test
+  (is (= ["112" "112" "112"] (num-split-n 112112112 3)))
+  (is (= ["1" "0" "0" "1"] (num-split-n 1001 1)))
+  (is (= ["1" "2" "3" "4" "5"] (num-split-n 12345 1))))
+
+(defn repeated-digits?
+  "Return true if number is made of repeated digits."
+  [number]
+  (loop [number number
+         n 1]
+    (cond
+      (> n (quot (count (num->digits-opt2 number)) 2))
+      false
+      (apply = (num-split-n number n)) ; All splitted groups are equal
+      true
+      :else (recur number (inc n)))))
+
+(deftest repeated-digits?-test
+  (testing "True cases"
+    (is (true? (repeated-digits? 123123)))
+    (is (true? (repeated-digits? 22)))
+    (is (true? (repeated-digits? 111))))
+  (testing "False cases"
+    (is (false? (repeated-digits? 123124)))
+    (is (false? (repeated-digits? 1231233)))
+    (is (false? (repeated-digits? 1001)))
+    (is (false? (repeated-digits? 12)))
+    (is (false? (repeated-digits? 0)))
+    (is (false? (repeated-digits? 1))))
+  (testing "Invalid values"
+    (is (false? (repeated-digits? -1)))
+    (is (false? (repeated-digits? -123123)))))
+
+; Compute final answer to part 2
+(defn part-2 [input]
+  (with-redefs-fn {#'repeated-twice? repeated-digits?
+                   #'num->digits num->digits-opt2}
+    #(sum-invalid-ids input)))
+
+; Check if the answer for test input is correct:
+(assert (= 4174379265 (part-2 test-input)))
+
+; (time (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; 50857215650
+
 ; ## Running all tests
 (run-tests)
