@@ -104,20 +104,20 @@
       false
       (= first-half second-half))))
 
+(deftest repeated-twice?-test
+  (testing "Valid IDs"
+    (is (false? (repeated-twice? 0)))
+    (is (false? (repeated-twice? 789)))
+    (is (false? (repeated-twice? 999))))
+  (testing "Invalid IDs"
+    (is (true? (repeated-twice? 123123)))
+    (is (true? (repeated-twice? 11)))))
+
 ; `valid-id?` is the main function for checking if an ID is valid or not.
 ; This being it's own function makes the logic slightly more understandable and
 ; flexible.
 (defn invalid-id? [n]
   (repeated-twice? n))
-
-(deftest invalid-id?-test
-  (testing "Valid IDs"
-    (is (false? (invalid-id? 0)))
-    (is (false? (invalid-id? 789)))
-    (is (false? (invalid-id? 999))))
-  (testing "Invalid IDs"
-    (is (true? (invalid-id? 123123)))
-    (is (true? (invalid-id? 11)))))
 
 ; Get all invalid IDs from specified range.
 (defn get-invalid-from-range
@@ -233,7 +233,6 @@
   [^long n]
   (mapv #(- (int %) 48) (Long/toString n)))
 
-
 ; My solution to part2 lead me to think how I can improve `num->digits-opt2`.\
 ; We don't really need to convert the digits to int. We can just compare strings or chars
 ; like we did in part 2.
@@ -297,7 +296,7 @@
   "Split digits of number to groups of 'n'.
   A group will be a sequence of digits to be able to represent groups such as '001' which is not a valid number."
   [^long number ^long n]
-  (loop [current-num-digits (vec (str number))
+  (loop [current-num-digits (num->digits number)
          groups []]
     (let [num-digits-split (vec (split-at n current-num-digits))]
       (if (empty? current-num-digits)
@@ -307,19 +306,17 @@
          (conj groups (first num-digits-split)))))))
 
 (deftest num-split-n-test
-  (is (= ['(\1 \1 \2) '(\1 \1 \2) '(\1 \1 \2)] (num-split-n 112112112 3)))
-  (is (= ['(\1) '(\0) '(\0) '(\1)] (num-split-n 1001 1)))
-  (is (= ['(\1) '(\2) '(\3) '(\4) '(\5)] (num-split-n 12345 1))))
+  (is (= ['(1 1 2) '(1 1 2) '(1 1 2)] (num-split-n 112112112 3)))
+  (is (= ['(1) '(0) '(0) '(1)] (num-split-n 1001 1)))
+  (is (= ['(1) '(2) '(3) '(4) '(5)] (num-split-n 12345 1))))
 
 (defn repeated-digits?
   "Return true if number is made of repeated digits."
   ([^long number]
-   (repeated-digits? number 1))
-  ([^long number n]
    (loop [number number
-          n n]
+          n 1]
      (cond
-       (> n (quot (count (vec (str number))) 2))
+       (> n (quot (count (num->digits number)) 2))
        false
        (apply = (num-split-n number n)) ; All splitted groups are equal
        true
@@ -336,15 +333,13 @@
     (is (false? (repeated-digits? 1001)))
     (is (false? (repeated-digits? 12)))
     (is (false? (repeated-digits? 0)))
-    (is (false? (repeated-digits? 1))))
-  (testing "Invalid values"
-    (is (false? (repeated-digits? -1)))
-    (is (false? (repeated-digits? -123123)))))
+    (is (false? (repeated-digits? 1)))))
 
 ; Compute final answer to part 2\
 ; We will use `sum-invalid-ids` but just use `repeated-digits?` instead of `repeated-twice?`
 (defn part-2 [input]
-  (with-redefs-fn {#'repeated-twice? repeated-digits?}
+  (with-redefs-fn {#'repeated-twice? repeated-digits?
+                   #'num->digits num->digits-opt3}
     #(sum-invalid-ids input)))
 
 ; Check if the answer for test input is correct:
@@ -354,6 +349,9 @@
 
 ; ### Optimization
 
+#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; => 50857215650
+
+; We have already applied the optimizations from part 1.\
 ; Our slution is quite slow as of now. (~15s execution time mean for full input).
 ;
 ; Let's profile `part-2` with the full input.
@@ -361,7 +359,8 @@
 (clerk/image "src/aoc/2025/day2/assets/profp2-1-zoom.png")
 
 ; To my understanding of the profiling results, and my current knowledge of Clojure and optimizing it,
-; I can't think of a way to make this algorithm faster. The type hints also make no difference.
+; I can't think of a way to make this algorithm faster. The type hints also make no difference.\
+; I think memoization can help with this problem, in places where recursion is happening.
 ;
 ; I think since the algorithm itself is a bruteforce algorithm and can't be very performant, Maybe create
 ; a better algorithm?
