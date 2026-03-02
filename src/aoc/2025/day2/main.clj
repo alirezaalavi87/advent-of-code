@@ -157,7 +157,7 @@
 
 ; Let's optimize `repeated-twice?` by eliminating the two nested `reverse` calls
 ; by using `drop` instead and doing one less division.
-(defn repeated-twice-opt?
+(defn repeated-twice?-opt
   [^long n]
   (let [digits (num->digits n)
         len (count digits)
@@ -172,7 +172,7 @@
 ;   (repeatedly 10000 #(rand-int 100000000)))
 ;
 ; (c/quick-bench (map repeated-twice? random-numbers))
-; (c/quick-bench (map repeated-twice-opt? random-numbers))
+; (c/quick-bench (map repeated-twice?-opt random-numbers))
 ; ```
 ; 13.73ms vs. 11.32ms mean execution time after optimizations. That's ~18%.
 
@@ -193,7 +193,7 @@
 ; Let's make `sum-invalid-ids` use our optimized version of functions and benchmark them.
 ;
 ; ```clojure
-; (with-redefs-fn {#'repeated-twice? repeated-twice-opt?
+; (with-redefs-fn {#'repeated-twice? repeated-twice?-opt
 ;                  #'num->digits num->digits-opt}
 ;  #(c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt"))))
 ; ; =>
@@ -233,23 +233,35 @@
   [^long n]
   (mapv #(- (int %) 48) (Long/toString n)))
 
+
+; My solution to part2 lead me to think how I can improve `num->digits-opt2`.\
+; We don't really need to convert the digits to int. We can just compare strings or chars
+; like we did in part 2.
+
+(defn num->digits-opt3
+  [^long n]
+  (vec (str n)))
+
 ; ```clojure
-; (with-redefs-fn {#'repeated-twice? repeated-twice-opt?
-;                  #'num->digits num->digits-opt2}
+; (c/quick-bench (num->digits-opt2 1234567890123456))
+; ; (out) Evaluation count : 979176 in 6 samples of 163196 calls.
+; ; (out)              Execution time mean : 638.355243 ns
+; (c/quick-bench (num->digits-opt3 1234567890123456))
+; ; (out) Evaluation count : 4139466 in 6 samples of 689911 calls.
+; ; (out)              Execution time mean : 142.703027 ns
+; ```
+
+; That's a lot faster!
+
+; ```clojure
+; (with-redefs-fn {#'repeated-twice? repeated-twice?-opt
+;                  #'num->digits num->digits-opt3}
 ;  #(c/quick-bench (sum-invalid-ids (parse-input "src/aoc/2025/day2/input.txt"))))
 ; =>
 ; ; (out) Evaluation count : 6 in 6 samples of 1 calls.
-; ; (out)              Execution time mean : 927.130309 ms
-; ; (out)     Execution time std-deviation : 30.063344 ms
-; ; (out)    Execution time lower quantile : 898.622286 ms ( 2.5%)
-; ; (out)    Execution time upper quantile : 972.890815 ms (97.5%)
-; ; (out)                    Overhead used : 6.691813 ns
-; ; (out)
-; ; (out) Found 1 outliers in 6 samples (16.6667 %)
-; ; (out)   low-severe   1 (16.6667 %)
-; ; (out)  Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+; ; (out)              Execution time mean : 572.113409 ms
 ; ```
-; This make our total optimizations **~10.5x faster** than our initial solution.
+; This make our total optimizations **~17x faster** than our initial solution.
 
 ; ## Part 2
 
@@ -275,42 +287,43 @@
 ; n=3 => [112 112 112]\
 ; groups are equal ✅
 
-; The groups should be strings of numbers so a gruop like "001" can still exist
-
-; This is somewhat bruteforce but it works.
+; ~The groups should be strings of numbers so a gruop like "001" can still exist.~\
+; The groups should be sequence of numbers `(\1 \1 \2)` because there is no need to create
+; strings from them which is a very costly process. In profiling, `str/join` took ~75% of our computation time.
 
 ; ### Implementation
 
 (defn num-split-n
   "Split digits of number to groups of 'n'.
-  A group will be a string of digits to be able to represent groups such as '001' which is not a valid number."
-  [number n]
-  (loop [current-num (str number)
+  A group will be a sequence of digits to be able to represent groups such as '001' which is not a valid number."
+  [^long number ^long n]
+  (loop [current-num-digits (vec (str number))
          groups []]
-    (let [num-digits (vec current-num)
-          num-digits-split (split-at n num-digits)]
-      (if (str/blank? current-num)
+    (let [num-digits-split (vec (split-at n current-num-digits))]
+      (if (empty? current-num-digits)
         groups
         (recur
-         (str/join (second num-digits-split))
-         (conj groups (str/join (first num-digits-split))))))))
+         (second num-digits-split)
+         (conj groups (first num-digits-split)))))))
 
 (deftest num-split-n-test
-  (is (= ["112" "112" "112"] (num-split-n 112112112 3)))
-  (is (= ["1" "0" "0" "1"] (num-split-n 1001 1)))
-  (is (= ["1" "2" "3" "4" "5"] (num-split-n 12345 1))))
+  (is (= ['(\1 \1 \2) '(\1 \1 \2) '(\1 \1 \2)] (num-split-n 112112112 3)))
+  (is (= ['(\1) '(\0) '(\0) '(\1)] (num-split-n 1001 1)))
+  (is (= ['(\1) '(\2) '(\3) '(\4) '(\5)] (num-split-n 12345 1))))
 
 (defn repeated-digits?
   "Return true if number is made of repeated digits."
-  [number]
-  (loop [number number
-         n 1]
-    (cond
-      (> n (quot (count (num->digits-opt2 number)) 2))
-      false
-      (apply = (num-split-n number n)) ; All splitted groups are equal
-      true
-      :else (recur number (inc n)))))
+  ([^long number]
+   (repeated-digits? number 1))
+  ([^long number n]
+   (loop [number number
+          n n]
+     (cond
+       (> n (quot (count (vec (str number))) 2))
+       false
+       (apply = (num-split-n number n)) ; All splitted groups are equal
+       true
+       :else (recur number (inc n))))))
 
 (deftest repeated-digits?-test
   (testing "True cases"
@@ -328,29 +341,53 @@
     (is (false? (repeated-digits? -1)))
     (is (false? (repeated-digits? -123123)))))
 
-; Compute final answer to part 2
+; Compute final answer to part 2\
+; We will use `sum-invalid-ids` but just use `repeated-digits?` instead of `repeated-twice?`
 (defn part-2 [input]
-  (with-redefs-fn {#'repeated-twice? repeated-digits?
-                   #'num->digits num->digits-opt2}
+  (with-redefs-fn {#'repeated-twice? repeated-digits?}
     #(sum-invalid-ids input)))
 
 ; Check if the answer for test input is correct:
 (assert (= 4174379265 (part-2 test-input)))
 
-(comment
-  (part-2 (parse-input "src/aoc/2025/day2/input.txt")) ; => 50857215650
-  )
+#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; => 50857215650
 
 ; ### Optimization
 
-; Our slution is **insanely** slow as of now. (~45s for full input).
+; Our slution is quite slow as of now. (~15s execution time mean for full input).
 ;
 ; Let's profile `part-2` with the full input.
 (clerk/image "src/aoc/2025/day2/assets/profp2-1.png")
-; We see that the main culprit is `num-split-n`. Specifically, `string/join` within it.
+(clerk/image "src/aoc/2025/day2/assets/profp2-1-zoom.png")
+
+; To my understanding of the profiling results, and my current knowledge of Clojure and optimizing it,
+; I can't think of a way to make this algorithm faster. The type hints also make no difference.
 ;
-; TODO: I think the algorithm itself is a bruteforce algorithm and can't be very performant. Maybe create
+; I think since the algorithm itself is a bruteforce algorithm and can't be very performant, Maybe create
 ; a better algorithm?
+
+; ## Observations and lessions
+
+; - Benchmarking results aren't consistent between different days. Same function with same
+;   inputs can give varying results in terms of absolutes (Execution mean time for example).
+;   But the proportions are almost the same. So relying on absolute times and values can be
+;   misleading.
+; - "TDD" isn't that great, but writing tests for your functions and having them
+;   for checking your functions' functionality(!) really helps and is especially useful for
+;   refactoring. Helps you refactor your code with more ease of mind.\
+;   Also, I love the documentation aspect of tests. They serve as a kind of document
+;   for how your function must behave.
+; - Profiling\
+;   This was my first time using clj-async-profiler.\
+;   We have defined a `:profile` alias in `deps.edn` which loads `clj-async-profiler` and
+;   some needed JVM options for profiling.\
+;   So we will run it with `clj -A:profile`. Then, within the repl, Something like this can help us benchmark our code.
+;   ```clojure
+;   (require '[clj-async-profiler.core :as prof])
+;   (require '[aoc.2025.day2.main :as main])
+;   (prof/profile (my-function))
+;   (prof/serve-ui 8080) ; serve the profiler UI on localhost:8080
+;   ```
 
 ; ## Running all tests
 (run-tests)
