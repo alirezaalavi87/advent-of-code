@@ -113,7 +113,7 @@
     (is (true? (repeated-twice? 123123)))
     (is (true? (repeated-twice? 11)))))
 
-; `valid-id?` is the main function for checking if an ID is valid or not.
+; `invalid-id?` is the main function for checking if an ID is valid or not.
 ; This being it's own function makes the logic slightly more understandable and
 ; flexible.
 (defn invalid-id? [n]
@@ -215,7 +215,7 @@
 ; ```
 ; Boy, Oh boy! We got ~87.3% increase in performance after our optimizations!\
 ; These are still cookie-cutter optimizations, tough. I think we can get much further
-; with more in depth opts.
+; with more in depth optimizations.
 
 ; Our profiling after the optimizations shows that now our most resource consuming
 ; part is the `mapv` function in `num->digits-opt`.
@@ -228,12 +228,14 @@
 ; Just makes it confusing.
 ; - Convert `n` to string directly, feed it as `coll` to `mapv`.
 ; - Use `int` substract the ASCII offset to get the number.
+;
+; (I found this way of converting number to digits in stackoverflow)
 
 (defn num->digits-opt2
   [^long n]
   (mapv #(- (int %) 48) (Long/toString n)))
 
-; My solution to part2 lead me to think how I can improve `num->digits-opt2`.\
+; UPDATE: My solution to part2 lead me to think how I can improve `num->digits-opt2`.\
 ; We don't really need to convert the digits to int. We can just compare strings or chars
 ; like we did in part 2.
 
@@ -270,9 +272,9 @@
 
 ; ### Approach
 
-; We only need to find repeated numbers. To do that
-; first approach that comes to my mind is to divide number by groups of n digits,
-; where $n \le \text{number length}$ and check in which $n$, all divided groups
+; We only need to find repeated numbers. To do that, the
+; first approach that comes to my mind is to divide number by groups of $n$ digits,
+; where $n \le \text{number length}$, and check if for some $n$, all divided groups
 ; are equal.
 
 ; let our number be 112112112
@@ -361,6 +363,8 @@
 ; To my understanding of the profiling results, and my current knowledge of Clojure and optimizing it,
 ; I can't think of a way to make this algorithm faster. The type hints also make no difference.\
 ; I think memoization can help with this problem, in places where recursion is happening.
+;
+; The complexity of `num-split-n` as it is with two nested `loop`s is `n^2`. How can we make it better?
 ;
 ; I think since the algorithm itself is a bruteforce algorithm and can't be very performant, Maybe create
 ; a better algorithm?
