@@ -182,7 +182,7 @@
 ; - We also see from our profiling result that `read-string` which is used throughout the code to
 ;   parse string numbers to number, is taking much time. So we will use `parse-long`
 ;   which is much better suited for this and has the same performance as `Integer/parseInt`.
-; - Remove `abs` since we konw all our numbers are positive
+; - Remove `abs` since we know all our numbers are positive
 
 (defn num->digits-opt
   [n]
@@ -347,11 +347,9 @@
 ; Check if the answer for test input is correct:
 (assert (= 4174379265 (part-2 test-input)))
 
-#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; => 50857215650
+#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day2/input.txt")))
 
 ; ### Optimization
-
-#_(c/quick-bench (part-2 (parse-input "src/aoc/2025/day2/input.txt"))) ; => 50857215650
 
 ; We have already applied the optimizations from part 1.\
 ; Our slution is quite slow as of now. (~15s execution time mean for full input).
