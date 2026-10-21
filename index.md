@@ -18,7 +18,8 @@ There are some utility functions that make redundant tasks in simpler. They are 
 |Task                                                          | Notebook                        | Extras     | Comment                                                                               |
 |---                                                           | ---                             | ---        | ---                                                                                   |
 |[Day 1: Secret Entrance](https://adventofcode.com/2025/day/1) | [day 1](src/aoc/2025/day1/main) | Bench, Viz | Lowkey proud of how concise and clean the actual solution is                          |
-|[Day 2: Gift Shop](https://adventofcode.com/2025/day/1)       | [day 2](src/aoc/2025/day2/main) | Bench, Opt | Worked a lot on optimizing the solution. Exploring performance optimization in Clojure|
+|[Day 2: Gift Shop](https://adventofcode.com/2025/day/2)       | [day 2](src/aoc/2025/day2/main) | Bench, Opt | Worked a lot on optimizing the solution. Exploring performance optimization in Clojure|
+|[Day 3: Lobby](https://adventofcode.com/2025/day/3)       | [day 3](src/aoc/2025/day3/main) |  | |
 
 ## AoC 2024
 
