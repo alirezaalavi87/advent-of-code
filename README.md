@@ -11,32 +11,39 @@ My goal isn't to solve each puzzle as fast as possible. I want to create a beaut
 ## How to run the Clerk notebooks
 
 ### With Clojure CLI
+
 ```sh
-clj -M:nextjournal/clerk nextjournal.clerk/serve! --watch-paths src --port 7777
+clj -M:nextjournal/clerk nextjournal.clerk/serve! --index index.md --paths "src/aoc/2025/**.clj" --paths "src/aoc/util/**.clj" --watch-paths src --port 7777
 ```
 
 ### From the REPL
+
 Take a look at the `dev/user.clj`for running the server, evaluating individual notebooks, etc.
 
 Evaluate expressions from within your editor if you can, or start a REPL and run clerk commands.
 
 ## How to build the Clerk notebooks
+
 run
+
 ```sh
-clj -X:nextjournal/clerk
+rm -rf public/build && clj -X:nextjournal/clerk
 ```
 
+> Always delete `public/build` before building: Clerk compiles the CSS *before* it writes any page, so a failed build leaves the previous site in place and you end up serving stale output.
+
 Then run the output with an http server like `http-serve`
+
 ```sh
 http-serve public/build
 ```
-
 
 ## How to run each solution separately
 
 ### With Clojure CLI
 
 The `runner.clj` file helps run each day.
+
 ```sh
 clj -M:run <year> <day> <& args>
 ```
