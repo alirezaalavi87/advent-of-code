@@ -3,7 +3,9 @@
   {:nextjournal.clerk/toc true}
   (:require [nextjournal.clerk :as clerk]
             [clojure.string :as str]
-            [clojure.test :refer [deftest is testing run-tests]]))
+            [clojure.test :refer [deftest is testing run-tests]]
+            [clojure.edn :as edn]
+            [clojure.java.io :as io]))
 
 ;; # Day3: Lobby
 ;; Each line of your input is a **battery band** where each digit corresponds to
@@ -122,11 +124,25 @@
 
 ;; Let's see how the max joltage increases from `n=2` to `n=99`.
 
+(def ^:private input-file "src/aoc/2025/day3/input.txt")
+
+;; To cache the result from local build to publish, we will write the results to a file.
+;; If file doesn't exist or is empty, then compute the results.\
+;; Thanks to Dylan Pulvers' help. <https://github.com/nextjournal/clerk/discussions/827>
+
+(def ^:private full-range-cache-file "src/aoc/2025/day3/full-range.edn")
 (def ^:private batteries-full-range (range 2 99))
-(def ^:private total-max-joltage-per-full-range (pmap
-                                                 #(sum-bank-joltages (parse-input! "src/aoc/2025/day3/input.txt")
-                                                                     (partial bank-max-joltage %))
-                                                 batteries-full-range))
+(def ^:private total-max-joltage-per-full-range
+  (if (.exists (io/file input-file))
+    ;; `vec` required since pmap is semi-lazy but we want the full result
+    (let [result (vec (pmap
+                       #(sum-bank-joltages (parse-input! input-file)
+                                           (partial bank-max-joltage %))
+                       batteries-full-range))]
+       ;; pr-str on a realized vector gives you a clean EDN file.
+      (spit full-range-cache-file (pr-str result))
+      result)
+    (edn/read-string (slurp full-range-cache-file))))
 
 (clerk/plotly {:data [{:x batteries-full-range
                        :y total-max-joltage-per-full-range

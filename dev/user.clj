@@ -1,4 +1,4 @@
-(ns dev.user
+(ns user
   (:require [nextjournal.clerk :as clerk]
             [nextjournal.clerk.viewer :as viewer]))
 
