@@ -83,11 +83,11 @@
       (digits->number highest-jolts))))
 
 (deftest bank-max-joltage-test
-  (is (= 95 (bank-max-joltage [1 2 3 3 2 9 5] 2)))
-  (is (= 95 (bank-max-joltage [9 5 1 1 2 4 1 2] 2)))
-  (is (= 89 (bank-max-joltage [8 1 1 1 1 9] 2)))
-  (is (= 99 (bank-max-joltage [8 1 1 9 1 9] 2)))
-  (is (= 9542 (bank-max-joltage [9 5 1 1 2 4 1 2] 4))))
+  (is (= 95 (bank-max-joltage 2 [1 2 3 3 2 9 5])))
+  (is (= 95 (bank-max-joltage 2 [9 5 1 1 2 4 1 2])))
+  (is (= 89 (bank-max-joltage 2 [8 1 1 1 1 9])))
+  (is (= 99 (bank-max-joltage 2 [8 1 1 9 1 9])))
+  (is (= 9542 (bank-max-joltage 4 [9 5 1 1 2 4 1 2]))))
 
 ;; Calculate the sum of all battery bank's highest joltage.
 ;;
@@ -118,4 +118,29 @@
 ;; Check if the answer for test input is correct
 (assert (= 3121910778619 (part-2 test-input)))
 
+;; ## Silly visualization: total max joltage per batteries count
+
+;; Let's see how the max joltage increases from `n=2` to `n=99`.
+
+(def ^:private batteries-full-range (range 2 99))
+(def ^:private total-max-joltage-per-full-range (pmap
+                                                 #(sum-bank-joltages (parse-input! "src/aoc/2025/day3/input.txt")
+                                                                     (partial bank-max-joltage %))
+                                                 batteries-full-range))
+
+(clerk/plotly {:data [{:x batteries-full-range
+                       :y total-max-joltage-per-full-range
+                       :mode "lines"}]})
+
+;; Let's make our range smaller so the delta is smaller
+(clerk/plotly {:data [{:x (take 15 batteries-full-range)
+                       :y (take 15 total-max-joltage-per-full-range)
+                       :mode "lines"}]})
+
+;; And smaller
+(clerk/plotly {:data [{:x (take 8 batteries-full-range)
+                       :y (take 8 total-max-joltage-per-full-range)
+                       :mode "lines"}]})
+
+;; ---
 (run-tests)

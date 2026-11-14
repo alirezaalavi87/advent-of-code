@@ -30,11 +30,11 @@ They are located at `src/aoc/util`
 
 ## AoC 2025
 
-|Task                                                          | Notebook                        | Extras     | Comment                                                                               |
+|Task                                                          | Solution                        | Extras     | Comment                                                                               |
 |---                                                           | ---                             | ---        | ---                                                                                   |
 |[Day 1: Secret Entrance](https://adventofcode.com/2025/day/1) | [day 1](src/aoc/2025/day1/main) | Bench, Viz | Lowkey proud of how concise and clean the actual solution is                          |
 |[Day 2: Gift Shop](https://adventofcode.com/2025/day/2)       | [day 2](src/aoc/2025/day2/main) | Bench, Opt | Worked a lot on optimizing the solution. Exploring performance optimization in Clojure|
-|[Day 3: Lobby](https://adventofcode.com/2025/day/3)           | [day 3](src/aoc/2025/day3/main) |            |                                                                                      |
+|[Day 3: Lobby](https://adventofcode.com/2025/day/3)           | [day 3](src/aoc/2025/day3/main) | Viz        |                                                                                      |
 
 ## AoC 2024
 
