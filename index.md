@@ -46,7 +46,7 @@ In some puzzles, I wrote with the default style of JS that I was used to
 (A bit functional but more procedural) and then tried to make it as functional
 as possible. The comparison between "normal" JS, FP style JS and Clojure are interesting.
 
-You can read the solutions [from source](https://github.com/alirezaalavi87/advent-of-code/tree/main/src/aoc/2024)
+You can read the solutions [from source](https://github.com/alirezaalavi87/advent-of-code/tree/main/)
 
 ## All notebooks
 

@@ -28,9 +28,10 @@
   (BigInteger/new (apply str v)))
 
 (deftest digits->number-test
-  (is (= 893 (digits->number [893]))))
+  (is (= 893 (digits->number [893])))
+  (is (= 241010 (digits->number [24 1 0 10]))))
 
-(defn parse-input
+(defn parse-input!
   "Parse input to vector of vectors.
   Each vector defining the joltages of batteries from a bank"
   [path]
@@ -39,10 +40,11 @@
             (str/split #"\n"))))
 
 (def test-input
-  (parse-input "src/aoc/2025/day3/input.test.txt"))
+  (parse-input! "src/aoc/2025/day3/input.test.txt"))
 
 (defn get-highest-num-in-vec
-  "Takes vector of numbers, returns the Highest number with it's index as a vector"
+  "Takes vector of numbers, returns the Highest number with it's index as a vector
+  [highest-num index]"
   [v]
   (let [max-num (first (sort > v))
         max-num-i (.indexOf v max-num)]
@@ -51,14 +53,14 @@
 (deftest get-highest-num-in-vec-test
   (is (= [9 2] (get-highest-num-in-vec [1 2 9 4]))))
 
-;; ## Part 1:
+;; ## Part 1: Max joltage of bank with 2 batteries
 ;; **Objective:** Find the highest possible output joltage.\
 ;; -> Find the largest possible joltage a bank can produce with 2 active batteries
 ;; -> Sum of all banks
 
 ;; To find the highest possible joltage that a bank can produce
 ;; with `n` active batteries:\
-;; 1. Search for the largest number in bank (`a`) where `a` still has at least n-1 batteries ahead of it.\
+;; 1. Search for the largest number in bank `a` while `a` still has at least `n-1` batteries ahead of it.\
 ;;    for example, let n be 2, and bank be 7809; `a` will be 8, not 9, because it has more than 1 batteries ahead of it.\
 ;;    If we don't do this the max-joltage of this bank will be 9 instead of 89
 ;; 2. Search for the largest number after `a`
@@ -67,12 +69,12 @@
   "Takes a vector of numbers representing a battery bank,
   Returns a number representing the highest possible joltage of that bank
   with `n` batteries."
-  [v n]
+  [n v]
   (loop [v v
          padding (dec n)
          highest-jolts []]
     (if (and (< (count highest-jolts) n) (pos? (count v)))
-      (let [;; The vector-(n-1) subvector to correctly get the highest possible number from sequence
+      (let [;; The vector-(n-1) subvector to correctly get the next highest possible number from sequence
             subv (subvec v 0 (- (count v) padding))
             [highest-jolt i] (get-highest-num-in-vec subv)]
         (recur (subvec v (inc i))
@@ -92,13 +94,28 @@
 ;; We use `pmap` here so the computations are done in parallel for higher speed.\
 ;; The solution is already pretty fast. On the real input it took ~14ms on average benchmarks with `map` and
 ;; computing them in parallel with `pmap` lowered that to ~5ms.
+(defn sum-bank-joltages
+  "`f` is the function that calculates the max joltage of a bank."
+  [input f]
+  (apply + (pmap f input)))
+
 (defn part-1 [input]
-  (let [bank-max-joltage-two-batteries (fn [v] (bank-max-joltage v 2))]
-    (apply + (pmap bank-max-joltage-two-batteries input))))
+  (let [bank-max-joltage-2 (partial bank-max-joltage 2)]
+    (sum-bank-joltages input bank-max-joltage-2)))
 
 ;; Check if the answer for test input is correct (357)
 (assert (= 357 (part-1 test-input)))
 
 ;; Great! part 1 done.
 
-#_(run-tests)
+;; ## Part 2: max joltage with 12 batteries
+;;
+;; It's the same as part 1 but now with turn on 12 batteries instead of 2 (`n=12`).\
+;; It's a breeze because we already thought of that. GOOD PROGRAMMING HECK YEAH!
+(defn part-2 [input]
+  (let [bank-max-joltage-12 (partial bank-max-joltage 12)]
+    (sum-bank-joltages input bank-max-joltage-12)))
+;; Check if the answer for test input is correct
+(assert (= 3121910778619 (part-2 test-input)))
+
+(run-tests)
